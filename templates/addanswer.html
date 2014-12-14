@@ -1,0 +1,18 @@
+<!DOCTYPE head>
+<html>
+<head>
+
+</head>
+
+<body>
+	<form action='' method='POST'>
+	{% if question %}
+	<p> Question: {{question.content}} </p>	
+	{% endif %}
+	<label> What is your answer <textarea name='content' rows='15' cols='60'></textarea> </label>
+
+	<input type='submit' value='Add Question' />
+	</form>
+
+</body>
+</html>

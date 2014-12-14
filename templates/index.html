@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+</head>
+
+<body>
+Welcome to Qud'ohra, the Simpsons-inspired Quora copy.
+<a href='/addquestion'> Add question </a>
+
+
+{% for question in questions %}
+{{question.content}} {{question.key}}<a href='/editquestion?questionid={{question.key.urlsafe()}}'> Edit</a> <a href='/addanswer?questionid={{question.key.urlsafe()}}'> Add answer </a><br />
+{% endfor %}
+</body>
+
+</html>
