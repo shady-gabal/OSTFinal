@@ -1,0 +1,18 @@
+<!DOCTYPE head>
+<html>
+<head>
+<link rel='stylesheet' href='/css/main.css' type='text/css' />
+<link rel='stylesheet' href='/css/editquestion.css' type='text/css' />
+
+</head>
+
+<body>
+	<form action='' method='POST'>	
+	<label> Your question? <textarea name='content' rows='15' cols='60'> {{question.content}}</textarea> </label>
+	<label> Which tags do you want to add to this question? <input type='text' name='tags' value='{{tags}}'/> </label>
+
+	<input type='submit' value='Edit Question' />
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+@font-face{
+	font-family: Gotham;
+	src: url('/css/Gotham-Light.otf');
+}
+@font-face{
+	font-family: GothamLight;
+	src: url('/css/Gotham-XLight.otf');
+}
+
+body{
+	font-family: 'Gotham', 'Tahoma', sans-serif;
+	animation: fadein .5s;
+	-webkit-animation: fadein .5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: .999; }
+}
+
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: .999; }
+}
+
+#wrapper{
+	background-color: #fff;
+	border-radius: 10px;
+	width: 825px;
+	margin-left: 30px;
+height: auto;
+min-height: 100vh !important;
+}

@@ -1,7 +1,8 @@
 <!DOCTYPE head>
 <html>
 <head>
-
+<link rel='stylesheet' type='text/css' href='/css/main.css' />
+<link rel='stylesheet' type='text/css' href='/css/addanswer.css' />
 </head>
 
 <body>
@@ -9,9 +10,9 @@
 	{% if question %}
 	<p> Question: {{question.content}} </p>	
 	{% endif %}
-	<label> What is your answer <textarea name='content' rows='15' cols='60'></textarea> </label>
+	<label> What is your answer <textarea name='content' rows='15' cols='60' required></textarea> </label>
 
-	<input type='submit' value='Add Question' />
+	<input type='submit' value='Add Answer' />
 	</form>
 
 </body>

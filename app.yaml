@@ -5,6 +5,10 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /css
+  static_dir: public/css
+- url: /img
+  static_dir: public/img
 - url: /.*
   script: qudohra.application
 libraries:

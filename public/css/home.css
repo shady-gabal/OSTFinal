@@ -1,0 +1,100 @@
+@font-face{
+	font-family: Gotham;
+	src: url('/css/Gotham-XLight.otf');
+}
+
+body{
+	font-family: 'Gotham', 'Tahoma', sans-serif;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-smoothing: subpixel-antialiased;
+}
+
+.simpsons{
+	animation: moveup .5s;
+	-webkit-animation: moveup .5s;
+	background: url('/img/simpsons_background.jpg') no-repeat center center fixed;
+	background-size: 100%;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+h1.lander_text{
+	display: inline-block;
+	font-size: 124px;
+	font-weight: normal;
+	animation: fadein 3s;
+	-webkit-animation: fadein 3s;
+
+}
+#qud{
+	position: fixed;
+    top: 40%;
+    left: 35%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+
+#hra{
+	position: fixed;
+    top: 40%;
+    left: 61%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+
+a.lander_link{
+	text-decoration: none;
+	font-size: 20px;
+	text-decoration: none;
+	color: #000;
+}
+
+#link1{
+	position: fixed;
+    top: 59%;
+    left: 34%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    display: none;
+
+}
+
+#link2{
+	position: fixed;
+    top: 59%;
+    left: 62%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    display: none;
+
+}
+
+.link_fadein{
+	animation: fadein .8s;
+	-webkit-animation: fadein .8s;
+}
+
+@keyframes moveup {
+	0% { background-position: 0 0;
+		background-color: #000; }
+	25% {background-position: 25% 0;}
+	50% {background-position: 50% 0;}
+	75% {background-position: 75% 0; }
+	100% { background-position: 100% 0; }
+}
+
+@-webkit-keyframes moveup {
+	0% { background-position: 0% -100%; }
+	10% {background-position: 25% -85%;}
+	20% {background-position: 25% -70%;}
+	30% {background-position: 25% -55%;}
+	40% {background-position: 50% -40%; }
+	50% {background-position: 25% -25%;}
+	60% {background-position: 25% -10%;}
+	70% {background-position: 25% 5%;}
+	80% {background-position: 25% 20%;}
+	90% {background-position: 75% 35%; }
+	100% { background-position: 100% 50%; }
+}

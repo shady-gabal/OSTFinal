@@ -1,0 +1,16 @@
+body{
+	background: url('/img/index_background.png') no-repeat fixed;
+	background-position: 400px;
+	background-color: #ffd920;
+	background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+}
+
+h1.greeting{
+	font-family: GothamLight;
+	text-align: center;
+	font-size: 36px;
+	font-weight: normal;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='/css/main.css' />
+<link rel='stylesheet' type='text/css' href='/css/home.css' />
+</head>
+
+<body id='body'>
+<h1 id='qud' class='lander_text'>Qud</h1>
+<h1 id='hra' class='lander_text'>'hra</h1>
+<h3 id='link1'> <a class='lander_link' href='/index'> View Questions </a> </h3>
+<h3 id='link2'> <a class='lander_link' href='/addquestion'> Add Question </a> </h3>
+
+<script>
+var body = document.getElementById('body');
+
+window.setTimeout(function(){
+	body.className = 'simpsons';
+}, 1000);
+
+window.setTimeout(function(){
+			document.getElementById('link1').style.display = 'block';
+		document.getElementById('link2').style.display = 'block';
+
+	document.getElementById('link1').className += ' link_fadein';
+
+	document.getElementById('link2').className += ' link_fadein';
+}, 1700);
+
+</script>
+</body>
+
+</html>
