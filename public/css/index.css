@@ -14,3 +14,8 @@ h1.greeting{
 	font-size: 36px;
 	font-weight: normal;
 }
+
+img{
+	max-width: 250px;
+	max-height: 250px;
+}

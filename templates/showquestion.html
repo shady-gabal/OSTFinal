@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='/css/main.css' />
+<link rel='stylesheet' type='text/css' href='/css/show.css' />
+</head>
+
+<body>
+
+{{question.content}}
+by {{question.user}}
+date created {{question.dateCreated}}
+date modified {{question.dateModified}}
+vote {{question.vote}}
+tags 
+{% for tag in question.tags %}
+	{{tag}}
+{% endfor %}
+
+<ul>
+	{% for answer in question.answers %}
+
+		<li>{{answer.vote}} --- {{ answer.content }} --- {{answer.dateModified}}</li>
+		{% if answer.ukey %}
+		<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
+		<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+		{% endif %}
+	{% endfor %}
+</ul>

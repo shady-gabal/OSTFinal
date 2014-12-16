@@ -11,13 +11,18 @@
 <h1 class='greeting'>Welcome to Qud'ohra, the Simpsons-inspired Quora copy.</h1>
 <a href='/addquestion'> Add question </a>
 
+<form method='GET' action=''>
+	<input type='text' name='sort' value='{{sort}}' />
+	<input type='submit' value='Sort'>
+</form>
 
+{% autoescape false %}
 {% if questions %}
 Current Questions:
 <ul>
 
 	{% for question in questions %}
-	<li>{{question.content}} --- {{question.dateModified}} 
+	<li>{{question.vote}} --- {{ question.content | truncate(500) }} --- {{question.dateModified}} 
 
 	{% if user %}
 	<a class='vote' href='/votequestion?direction=up&questionid={{question.key.urlsafe()}}'> Vote up</a>
@@ -26,27 +31,42 @@ Current Questions:
 		{% if question.user == user %}
 		<a class='edit' href='/editquestion?questionid={{question.key.urlsafe()}}'> Edit</a>  
 		{% endif %}
+		<a class='show' href='/showquestion?questionid={{question.key.urlsafe()}}'> Show</a>  
+
 	{% endif %}
 	</li>
 
 	<ul>
 	{% for answer in question.answers %}
-		<li>{{answer.content}} --- {{answer.dateModified}}</li>
+
+		<li>{{answer.vote}} --- {{ answer.content | truncate(500) }} --- {{answer.dateModified}}</li>
+		{% if answer.ukey %}
+		<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
+		<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+		{% endif %}
 	{% endfor %}
+	</ul>
 
 		{% if user %}
 		<a href='/addanswer?questionid={{question.key.urlsafe()}}'> Add answer </a><br />
 		{% endif %}
-
-	</ul>
 	{% endfor %}
+
 </ul>
 	{% else %}
 
 <p> No questions yet. {% if user %} <a href='/addquestion'>Ask one!</a> </p>{% endif %}
 
 	{% endif %}
+{%endautoescape %}
 	</div>
+
+{% if page|int > 0 %}
+<form method='GET' action=''>
+	<input type='hidden' name='page_num' value='{{((page|int)+1)|string}}' />
+	<input type='submit' value='Next Page'>
+</form>
+{% endif %}
 </div>
 </body>
 

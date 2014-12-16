@@ -15,3 +15,10 @@ indexes:
   properties:
   - name: dateModified
     direction: desc
+
+- kind: Question
+  ancestor: yes
+  properties:
+  - name: tags
+  - name: dateModified
+    direction: desc

@@ -14,22 +14,18 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-
-# 1)The system should handle multiple users and each user should be able to create questions, answer them, or vote.
-# 2)Users should be able to edit any questions or answers they have created, or change any votes. 
-# 4)When viewing all questions, it will show at most 10 questions on a page, with a link to go to the next page of older questions (you don't need a "newer questions" link).
-# 5)When viewing the answers to a question, answers should be sorted by largest difference between up and down votes to smallest difference.
-# 6)Each question should support the notion of having tags. When creating or editing a question, the author can specify 0 or more tags. When viewing questions, the viewer can look at all questions (the default) or only questions with a specific tag.
-# 7)When questions or answers contain links (text that begins with http:// or https://), they will be displayed as HTML links when viewed.  If a link ends with .jpg, .png, or .gif, it will be displayed inline rather than as a link.
+# Edit answer
+# 7)When questions or answers contain links (text that begins with http:// or https://), they will be displayed as HTML links when viewed.  
 # 8)Images can be uploaded.  These will be available via a permalink after uploaded, and can be referenced using links in the posts.
-# 9)When multiple questions are shown on the same page (the default view), each question will display the content capped at 500 characters.  Each question will have a "permalink" that, when followed, shows the complete content of the post on its own page.
 # 11)Each question will have an RSS link, that dumps all questions and answers in XML format (see wiki page for example).
 #### MODELS ####
 
-class User(ndb.Model):
+class UserModel(ndb.Model):
 	user = ndb.UserProperty(indexed=True)
-	votes = 
-
+	qvotesup = ndb.StringProperty(repeated=True)
+	qvotesdown = ndb.StringProperty(repeated=True)
+	avotesup = ndb.StringProperty(repeated=True)
+	avotesdown = ndb.StringProperty(repeated=True)
 	# use user def to create custom user class, retreive user and see their votes, when voting automatically add/subtract from qid in question
 
 class VoteHolder(ndb.Model):
@@ -48,6 +44,7 @@ class Answer(ndb.Model):
 	dateCreated = ndb.DateTimeProperty(auto_now_add=True)
 	dateModified = ndb.DateTimeProperty(auto_now=True)
 	vote = ndb.IntegerProperty(default=0)
+	ukey = ndb.KeyProperty()
 
 class Question(ndb.Model):
 
@@ -71,11 +68,25 @@ class QuestionList(webapp2.RequestHandler):
 def questionListKey(name="QuestionList"):
 	return ndb.Key('QuestionList', name)
 
+def getUserModel(user):
+	q = UserModel.query(UserModel.user == user)
+	usermodel = q.get()
+
+	if not usermodel:
+		usermodel = UserModel()
+		usermodel.user = user
+		usermodel.put()
+	return usermodel 
+
+
 def renderIfLoggedIn(me, template, templateValues={}):
 	self = me
 	user = users.get_current_user()
-
+	
 	if user:
+		usermodel = getUserModel(user)
+		templateValues['usermodel'] = usermodel
+
 		try:
 			val = templateValues["user"]
 		except KeyError:
@@ -87,8 +98,32 @@ def renderIfLoggedIn(me, template, templateValues={}):
 		self.redirect(users.create_login_url(self.request.uri))
 
 def replaceWithImages(string):
-	r = re.compile(r"@(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS")
-	print r.sub(string, "<img src='\1'/>")
+	ans = re.sub(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", r"<img src='\1'> </img>",  string)
+	return ans
+
+def replaceWithLinks(string):
+	r = re.compile(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*))")
+	for match in r.finditer(string):
+		if not re.match(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", match):
+			re.sub(match, "<a href='\1'>Link</a>")
+
+def quicksort(array):
+	less = []
+	equal = []
+	greater = []
+
+	if len(array) > 1:
+		pivot = abs(array[0].vote)
+		for x in array:
+		    if abs(x.vote) < pivot:
+		        less.append(x)
+		    if abs(x.vote) == pivot:
+		        equal.append(x)
+		    if abs(x.vote) > pivot:
+		        greater.append(x)
+		return quicksort(greater)+equal+quicksort(less) 
+	else:  
+		return array
 
 #### PAGES ####
 
@@ -100,9 +135,26 @@ class HomePage(webapp2.RequestHandler):
 class IndexPage(webapp2.RequestHandler):
 
     def get(self):
-    	questionQuery = Question.query(ancestor=questionListKey()).order(-Question.dateModified)
-    	questionsList = questionQuery.fetch()
-        renderIfLoggedIn(self,'index.html', {'questions': questionsList})
+    	page_num = self.request.get('page_num')
+    	if page_num:
+    		offset = (int(page_num)-1)* 10;
+    	else:
+    		page_num = 1
+    		offset = 0
+
+    	sort = self.request.get('sort')
+
+    	if sort:
+    		questionQuery = Question.query(ancestor=questionListKey()).filter(ndb.StringProperty('tags') == sort).order(-Question.dateModified)
+    	else:
+    		questionQuery = Question.query(ancestor=questionListKey()).order(-Question.dateModified)
+
+    	if questionQuery.count() <= page_num * 10:
+    		page_num = 0
+
+    	questionsList = questionQuery.fetch(10, offset=offset)
+
+        renderIfLoggedIn(self,'index.html', {'questions': questionsList, 'sort' : sort, 'page': str(page_num)})
 
 
 
@@ -117,19 +169,13 @@ class AddQuestionPage(webapp2.RequestHandler):
 		if user:
 			question = Question(parent=questionListKey())
 			question.user = user
-			question.content = cgi.escape(self.request.get('question'))
+			question.content = replaceWithImages(cgi.escape(self.request.get('question')))
 			question.tags = cgi.escape(self.request.get('tags')).split()
 			question.answers = []
 			question.put()
 			self.redirect("/index")
 			#Add question, redirect to index
 
-
-
-class ShowQuestionPage(webapp2.RequestHandler):
-
-	def get(self):
-		return
 
 
 class AddAnswerPage(webapp2.RequestHandler):
@@ -151,8 +197,10 @@ class AddAnswerPage(webapp2.RequestHandler):
 
 			answer = Answer()
 			answer.questionid = qid
-			answer.content = self.request.get('content')
+			answer.content = replaceWithImages(self.request.get('content'))
 			answer.user = user
+			answer.put()
+			answer.ukey = answer.key
 			answer.put()
 
 			i = 0
@@ -170,11 +218,17 @@ class AddAnswerPage(webapp2.RequestHandler):
 		else:
 			self.redirect('/index')
 
-class ShowAnswerPage(webapp2.RequestHandler):
+
+
+class ShowQuestionPage(webapp2.RequestHandler):
 
 	def get(self):
+		qid = self.request.get('questionid')
+		qKey = ndb.Key(urlsafe=qid)
+		question = qKey.get()
+		template = JINJA_ENVIRONMENT.get_template('templates/showquestion.html')
+		self.response.write(template.render({'question' : question}))
 		return
-
 
 class EditQuestionPage(webapp2.RequestHandler):
 
@@ -217,55 +271,87 @@ class EditAnswerPage(webapp2.RequestHandler):
 class VoteQuestionPage(webapp2.RequestHandler):
 
 	def get(self):
-		user = users.get_current_user
+		user = users.get_current_user()
+
 		if user:
+			usermodel = getUserModel(user)
+			direction = self.request.get('direction').strip()
 			qid = self.request.get('questionid')
 			qKey = ndb.Key(urlsafe=qid)
+			question = qKey.get()
 
-			query = VoteHolder.query(ancestor=qKey)
-			voteholder = query.fetch(1)
-
-			# if previous voteholder exists for this question
-			if voteholder:
-				if self.request.get('direction') == 'up':
-					if str(user.key) in voteholder.votedup:
-						self.redirect('/index')
-					else:
-						voteholder.votedup.append(str(user.key))
-				else:
-					if str(user.key) in voteholder.voteddown:
-						self.redirect('/index')
-					else:
-						voteholder.voteddown.append(str(user.key))
-
-			# else this is the first voteholder on this question
-			else:
-				voteholder = VoteHolder(parent=qKey)
-				voteholder.questionid = qid
-
-				if self.request.get('direction') == 'up':
-					voteholder.votedup.append(str(user.user_id()))
-				elif self.request.get('direction') == 'down':
-					voteholder.voteddown.append(str(user.key))
+			if direction == 'up':
+				if qid not in usermodel.qvotesup:
+					question.vote += 1
+					question.put()
+					usermodel.qvotesup.append(qid)
+					usermodel.put()
+					self.redirect('/index')
+					self.response.write("Voted question down")
 				else:
 					self.redirect('/index')
-				voteholder.put()
+			elif direction == 'down':
+				if qid not in usermodel.qvotesdown:
+					question.vote -= 1
+					question.put()
+					usermodel.qvotesdown.append(qid)
+					usermodel.put()
+					self.redirect('/index')
+					self.response.write("Voted question down")
+				else:
+					self.redirect('/index')
+
+			else:
+				self.redirect('/index')
+
 		else:
 			self.redirect('/index')
 		return
 
-# class VoteAnswerPage(webapp2.RequestHandler):
+class VoteAnswerPage(webapp2.RequestHandler):
 
-# 	def post(self):
-# 		qid = self.request.get('questionid')
-# 		qKey = ndb.Key(urlsafe=qid)
-# 		voteholder = VoteHolder(parent=qkey)
-# 			question.user = user
-# 			question.content = cgi.escape(self.request.get('question'))
-# 			question.tags = cgi.escape(self.request.get('tags')).split()
-# 			question.answers = []
-# 			question.put()
-# 		return
+	def get(self):
+		user = users.get_current_user()
+
+		if user:
+			usermodel = getUserModel(user)
+			direction = self.request.get('direction').strip()
+			aid = self.request.get('answerid')
+			qid = self.request.get('questionid')
+			qKey = ndb.Key(urlsafe=qid)
+			question = qKey.get()
+
+			i = 0
+			for ans in question.answers:
+				if ans.ukey and ans.ukey.urlsafe() == aid:
+					answer = ans
+
+			if direction == 'up':
+				if aid not in usermodel.avotesup:
+					answer.vote += 1
+					question.answers = quicksort(question.answers)
+					question.put()
+					usermodel.avotesup.append(aid)
+					usermodel.put()
+					self.redirect('/index')
+				else:
+					self.redirect('/index')
+			elif direction == 'down':
+				if aid not in usermodel.avotesdown:
+					answer.vote -= 1
+					question.answers = quicksort(question.answers)
+					question.put()
+					usermodel.avotesdown.append(aid)
+					usermodel.put()
+					self.redirect('/index')
+				else:
+					self.redirect('/index')
+
+			else:
+				self.redirect('/index')
+		else:
+			self.redirect('/index')
+		return
 
 class AddImagePage(webapp2.RequestHandler):
 
@@ -284,5 +370,8 @@ application = webapp2.WSGIApplication([
     ('/addanswer', AddAnswerPage),
     ('/editquestion', EditQuestionPage),
     ('/editanswer', EditAnswerPage),
-    ('/votequestion', VoteQuestionPage)
+    ('/votequestion', VoteQuestionPage),
+	('/voteanswer', VoteAnswerPage),
+	('/showquestion', ShowQuestionPage),
+
 ], debug=True)
