@@ -1,0 +1,11 @@
+body{
+	background: url('/img/show_background.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+    background-position: 350px;
+    padding-left: -10px;
+    background-color: #87c3ff;
+}

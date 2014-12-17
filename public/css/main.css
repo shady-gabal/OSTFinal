@@ -23,6 +23,18 @@ body{
     to   { opacity: .999; }
 }
 
+
+@keyframes fadeout {
+    from { opacity: .999; }
+    to   { opacity: 0; }
+}
+
+@-webkit-keyframes fadeout {
+    from { opacity: .999; }
+    to   { opacity: 0; }
+}
+
+
 #wrapper{
 	background-color: #fff;
 	border-radius: 10px;

@@ -6,5 +6,38 @@ body{
     -o-background-size: cover;
     background-size: 100%;
     background-position: 0px -300px;
+    font-family: 'GothamLight', Tahoma;
+}
 
+form{
+	margin-top: 50px;
+	margin-left: 50px;
+}
+textarea, label{
+	display: block;
+	margin-top: 10px;
+}
+
+textarea{
+	font-size: 18px;
+
+}
+label{
+	font-size: 20px;
+}
+
+input{
+	font-size: 18px;
+	display: block;
+}
+
+input[type='submit']{
+	margin-top: 10px;
+	font-size: 24px;
+}
+
+.input_tags{
+	margin-top: 10px;
+	width: 345px;
+	font-size: 18px;
 }

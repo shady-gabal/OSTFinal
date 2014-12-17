@@ -1,0 +1,26 @@
+<!DOCTYPE head>
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='/css/main.css' />
+<link rel='stylesheet' type='text/css' href='/css/addquestion.css' />
+
+<style>
+body{
+	background: url('/img/add_image_background.jpg') no-repeat center center fixed;
+		background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+}
+</style>
+</head>
+
+<body>
+	<form action='{{upload_url}}' method='POST'  enctype="multipart/form-data">
+	<label> Upload image: <input type='file' name='file' /> </label>
+	<input type='submit' value='Add Image' />
+	</form>
+
+</body>
+</html>

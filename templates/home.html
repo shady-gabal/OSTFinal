@@ -8,25 +8,66 @@
 <body id='body'>
 <h1 id='qud' class='lander_text'>Qud</h1>
 <h1 id='hra' class='lander_text'>'hra</h1>
-<!-- <h3 id='link1'> <a class='lander_link' href='/index'> Enter </a> </h3>
- -->
-<!--  <h3 id='link2'> <a class='lander_link' href='/index'> Enter </a> </h3>
- -->
+
+<div id='intro'>
+<p id='who'> In your time of need, who do you want answering your questions?</p>
+<p id='reveal'> <span id='want'>You want</span> <span id='simpson'> Homer Simpson</span> </p>
+</div>
+<h3 id='link1'> <a class='lander_link' href='/addimage'> Images </a> </h3>
+
+ <h3 id='link2'> <a class='lander_link' href='/index'> Questions </a> </h3>
+
 <script>
 var body = document.getElementById('body');
 
 window.setTimeout(function(){
 	body.className = 'simpsons';
-}, 1000);
+}, 10500);
 
 window.setTimeout(function(){
-			// document.getElementById('link1').style.display = 'block';
-		document.getElementById('link2').style.display = 'block';
+	document.getElementById('intro').style.display = 'none';
+}, 9500);
+
+
+window.setTimeout(function(){
+	document.getElementById('intro').className += ' fadeout';
+}, 8000);
+
+
+window.setTimeout(function(){
+		document.getElementById('qud').style.display = 'inline-block';
+		document.getElementById('hra').style.display = 'inline-block';
+
+		document.getElementById('qud').className += ' lander_text';
+
+		document.getElementById('hra').className += ' lander_text';
+}, 9700);
+
+
+window.setTimeout(function(){
+	document.getElementById('want').style.display = 'inline-block';
+	document.getElementById('want').className += ' want_fadein';
+}, 2500);
+
+window.setTimeout(function(){
+	document.getElementById('simpson').style.visibility = 'visible';
+	document.getElementById('simpson').className += ' want_fadein';
+}, 4500);
+
+window.setTimeout(function(){
+	document.getElementById('link1').style.display = 'block';
+	document.getElementById('link2').style.display = 'block';
 
 	document.getElementById('link1').className += ' link_fadein';
 
 	document.getElementById('link2').className += ' link_fadein';
-}, 1700);
+}, 9200);
+
+
+window.setTimeout(function(){
+	document.getElementById('homer').style.display = 'block';
+	document.getElementById('homer').className += ' link_fadein';
+}, 9200);
 
 </script>
 </body>

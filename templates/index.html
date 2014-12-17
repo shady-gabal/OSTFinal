@@ -8,7 +8,7 @@
 <body>
 <div id='wrapper'>
 <div class='animate'>
-<h1 class='greeting'>Welcome to Qud'ohra, the Simpsons-inspired Quora copy.</h1>
+<h1 class='greeting'>Welcome to Qud'ohra, Homer Simpson's Quora.</h1>
 <a href='/addquestion'> Add question </a>
 
 <form method='GET' action=''>
@@ -22,7 +22,7 @@ Current Questions:
 <ul>
 
 	{% for question in questions %}
-	<li>{{question.vote}} --- {{ question.content | truncate(500) }} --- {{question.dateModified}} 
+	<li>{{question.vote}} --- {{ replaceWithLinks(replaceWithImages(question.content | truncate(500)))  }} --- {{question.dateModified}} 
 
 	{% if user %}
 	<a class='vote' href='/votequestion?direction=up&questionid={{question.key.urlsafe()}}'> Vote up</a>
@@ -41,9 +41,16 @@ Current Questions:
 
 		<li>{{answer.vote}} --- {{ answer.content | truncate(500) }} --- {{answer.dateModified}}</li>
 		{% if answer.ukey %}
-		<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
-		<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+			<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
+			<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+
+			{% if answer.user == user %}
+				<a class='editanswer' href='/editanswer?answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Edit </a>
+			{% endif %}
+
 		{% endif %}
+
+
 	{% endfor %}
 	</ul>
 

@@ -1,10 +1,5 @@
-@font-face{
-	font-family: Gotham;
-	src: url('/css/Gotham-XLight.otf');
-}
-
 body{
-	font-family: 'Gotham', 'Tahoma', sans-serif;
+	font-family: 'GothamLight', 'Tahoma', sans-serif;
 	-webkit-font-smoothing: subpixel-antialiased;
 	font-smoothing: subpixel-antialiased;
 }
@@ -28,7 +23,31 @@ h1.lander_text{
 	-webkit-animation: fadein 3s;
 
 }
+
+#who{
+	position: fixed;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    font-size: 36px;
+    text-align: center;
+	animation: fadein 1.5s ease-in;
+	-webkit-animation: fadein 1.5s ease-in;
+}
+
+#reveal{
+	position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    font-size: 28px;
+    text-align: center;
+}
+
 #qud{
+	display: none;
 	position: fixed;
     top: 40%;
     left: 35%;
@@ -37,6 +56,7 @@ h1.lander_text{
 }
 
 #hra{
+	display: none;
 	position: fixed;
     top: 40%;
     left: 61%;
@@ -54,7 +74,7 @@ a.lander_link{
 #link1{
 	position: fixed;
     top: 59%;
-    left: 34%;
+    left: 38%;
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
     display: none;
@@ -76,6 +96,25 @@ a.lander_link{
 	-webkit-animation: fadein .8s;
 }
 
+#want{
+	display: none;
+}
+
+#simpson{
+	visibility: hidden;
+}
+
+.want_fadein{
+	animation: fadein 1.5s ease-in;
+	-webkit-animation: fadein 1.5s ease-in;
+		-webkit-font-smoothing: subpixel-antialiased;
+	font-smoothing: subpixel-antialiased;
+}
+
+.fadeout{
+	animation: fadeout 1.5s ease-out;
+	-webkit-animation: fadeout 1.5s ease-out;
+}
 @keyframes moveup {
 	0% { background-position: 0 0;
 		background-color: #000; }

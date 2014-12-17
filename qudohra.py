@@ -1,21 +1,44 @@
 from google.appengine.api import users
 from google.appengine.ext import ndb
-from datetime import datetime
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
+
 
 import cgi
 import os
+import urllib
 import webapp2
 import jinja2
 import re
+
+def replaceWithImages(string):
+	ans = re.sub(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", r"<img src='\1'> </img>",  string)
+	return ans
+
+def replaceWithLinks(string):
+	finalans = "" 
+	ans = re.findall(r"((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)", string)
+	i = 0
+	while i < len(ans):
+		curr = ans[i][0]
+		if not re.match(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", curr):
+			print curr + " does not match"
+			finalans = re.sub(curr, "<a href='" + curr + "'>" + curr + "</a>", string)
+		i+=1 
+	if not finalans:
+		return string
+	else:
+		return finalans
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+JINJA_ENVIRONMENT.globals['replaceWithImages'] = replaceWithImages 
+JINJA_ENVIRONMENT.globals['replaceWithLinks'] = replaceWithLinks 
 
-# Edit answer
-# 7)When questions or answers contain links (text that begins with http:// or https://), they will be displayed as HTML links when viewed.  
+
 # 8)Images can be uploaded.  These will be available via a permalink after uploaded, and can be referenced using links in the posts.
 # 11)Each question will have an RSS link, that dumps all questions and answers in XML format (see wiki page for example).
 #### MODELS ####
@@ -26,7 +49,6 @@ class UserModel(ndb.Model):
 	qvotesdown = ndb.StringProperty(repeated=True)
 	avotesup = ndb.StringProperty(repeated=True)
 	avotesdown = ndb.StringProperty(repeated=True)
-	# use user def to create custom user class, retreive user and see their votes, when voting automatically add/subtract from qid in question
 
 class VoteHolder(ndb.Model):
 	date = ndb.DateTimeProperty(auto_now=True)
@@ -97,15 +119,7 @@ def renderIfLoggedIn(me, template, templateValues={}):
 	else:
 		self.redirect(users.create_login_url(self.request.uri))
 
-def replaceWithImages(string):
-	ans = re.sub(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", r"<img src='\1'> </img>",  string)
-	return ans
 
-def replaceWithLinks(string):
-	r = re.compile(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*))")
-	for match in r.finditer(string):
-		if not re.match(r"(((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)(.jpg|.png|.gif|.jpeg))", match):
-			re.sub(match, "<a href='\1'>Link</a>")
 
 def quicksort(array):
 	less = []
@@ -169,7 +183,7 @@ class AddQuestionPage(webapp2.RequestHandler):
 		if user:
 			question = Question(parent=questionListKey())
 			question.user = user
-			question.content = replaceWithImages(cgi.escape(self.request.get('question')))
+			question.content = cgi.escape(self.request.get('question'))
 			question.tags = cgi.escape(self.request.get('tags')).split()
 			question.answers = []
 			question.put()
@@ -197,7 +211,7 @@ class AddAnswerPage(webapp2.RequestHandler):
 
 			answer = Answer()
 			answer.questionid = qid
-			answer.content = replaceWithImages(self.request.get('content'))
+			answer.content = cgi.escape(self.request.get('content'))
 			answer.user = user
 			answer.put()
 			answer.ukey = answer.key
@@ -262,10 +276,25 @@ class EditQuestionPage(webapp2.RequestHandler):
 class EditAnswerPage(webapp2.RequestHandler):
 
 	def get(self):
-		qid = self.request.get('questionid')
-		qKey = ndb.Key(urlsafe=qid)
-		question = qKey.get()
-		renderIfLoggedIn(self, 'editquestion.html', {'question': question})
+		user = users.get_current_user()
+		if user:
+			aid = self.request.get('answerid')
+			qid = self.request.get('questionid')
+			qKey = ndb.Key(urlsafe=qid)
+			question = qKey.get()
+
+			i = 0
+			for ans in question.answers:
+				if ans.ukey and ans.ukey.urlsafe() == aid:
+					answer = ans
+
+			if answer.user == user:
+				renderIfLoggedIn(self, 'editanswer.html', {'question': question, 'answer' : answer})
+			else:
+				self.redirect('/index')
+		else:
+			self.redirect('/index')
+
 		return
 
 class VoteQuestionPage(webapp2.RequestHandler):
@@ -356,10 +385,24 @@ class VoteAnswerPage(webapp2.RequestHandler):
 class AddImagePage(webapp2.RequestHandler):
 
 	def get(self):
+		upload_url = blobstore.create_upload_url('/upload')
+		renderIfLoggedIn(self, 'addimage.html', {'upload_url': upload_url})
 		return
 
 	def post(self):
 		return
+
+class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+	def post(self):
+		upload_files = self.get_uploads('file')  
+		blob_info = upload_files[0]
+		self.redirect('/serve/%s' % blob_info.key())
+
+class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
+	def get(self, resource):
+		resource = str(urllib.unquote(resource))
+		blob_info = blobstore.BlobInfo.get(resource)
+		self.send_blob(blob_info)
 
 
 
@@ -373,5 +416,9 @@ application = webapp2.WSGIApplication([
     ('/votequestion', VoteQuestionPage),
 	('/voteanswer', VoteAnswerPage),
 	('/showquestion', ShowQuestionPage),
+	('/addimage', AddImagePage),
+	('/upload', UploadHandler),
+	('/serve/([^/]+)?', ServeHandler)
+
 
 ], debug=True)
