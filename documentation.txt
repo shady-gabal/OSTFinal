@@ -12,6 +12,7 @@ Notes:
 3)RSS is not spaced (assignment did not mention this as a requirement)
 4)Link and image conversion is done in templates, using custom helper methods.
 5)This is styled pretty nicely for a project assignment, which I know was not a requirement but I coded this as if it was a real website (missing a couple of features that a complete site would have but I didn't have enough time to implement all of them).
+6) Git branch with tag 'experiment' turns off RSS. /rss will not work
 
 Code Explanation:
 
