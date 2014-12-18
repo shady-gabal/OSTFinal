@@ -5,7 +5,33 @@ body{
  	-moz-background-size: cover;
     -o-background-size: cover;
     background-size: 100%;
-    background-position: 350px;
+    background-position: 100px;
     padding-left: -10px;
     background-color: #87c3ff;
+    color: #FFF;
+    display: block;
+    font-size: 18px;
+    margin-left: 15px;
+}
+
+#question{
+	font-weight: bold;
+	font-size: 24px;
+	text-decoration: underline;
+
+}
+
+.a_date{
+	font-size: 12px;
+}
+
+span{
+	margin-left: 15px;
+	font-size: 14px;
+}
+
+a{
+	text-decoration: none;
+	color: #FFF;
+	font-size: 12px;
 }

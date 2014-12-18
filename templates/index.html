@@ -3,30 +3,40 @@
 <head>
 <link rel='stylesheet' type='text/css' href='/css/main.css' />
 <link rel='stylesheet' type='text/css' href='/css/index.css' />
+<title> Qudo'hra</title>
 </head>
 
 <body>
 <div id='wrapper'>
 <div class='animate'>
 <h1 class='greeting'>Welcome to Qud'ohra, Homer Simpson's Quora.</h1>
-<a href='/addquestion'> Add question </a>
+<p class='help'> Homer needs your help! If you see a question you know the answer to, answer it. He needs you!</p>
 
-<form method='GET' action=''>
-	<input type='text' name='sort' value='{{sort}}' />
-	<input type='submit' value='Sort'>
-</form>
+<div id='content_wrapper'>
+<div id='toolbar_wrapper'>
+<a href='/addquestion' class='top_add_question'> Add question </a>
+<div></div>
 
+<a href='/rss' class='rss'> RSS </a>
 {% autoescape false %}
 {% if questions %}
+
+<form method='GET' action='' id='sort'>
+	<input type='text' name='sort' value='{{sort}}' />
+	<input type='submit' value='Filter'>
+</form>
+</div>
+
+
 Current Questions:
 <ul>
 
 	{% for question in questions %}
-	<li>{{question.vote}} --- {{ replaceWithLinks(replaceWithImages(question.content | truncate(500)))  }} --- {{question.dateModified}} 
+	<li class='question'>{{ replaceWithLinks(replaceWithImages(question.content | truncate(500)))  }} <span class='vote_count'>{{question.vote}} </span>
 
 	{% if user %}
-	<a class='vote' href='/votequestion?direction=up&questionid={{question.key.urlsafe()}}'> Vote up</a>
-	<a class='vote' href='/votequestion?direction=down&questionid={{question.key.urlsafe()}}'> Vote down</a>
+	<a class='vote' href='/votequestion?direction=up&questionid={{question.key.urlsafe()}}'> &#9650;</a>
+	<a class='vote' href='/votequestion?direction=down&questionid={{question.key.urlsafe()}}'> &#9660;</a>
 
 		{% if question.user == user %}
 		<a class='edit' href='/editquestion?questionid={{question.key.urlsafe()}}'> Edit</a>  
@@ -34,28 +44,34 @@ Current Questions:
 		<a class='show' href='/showquestion?questionid={{question.key.urlsafe()}}'> Show</a>  
 
 	{% endif %}
+
+	<p class='date_mod'>Date Modified: {{question.dateModified}} </p>
+
 	</li>
 
 	<ul>
 	{% for answer in question.answers %}
 
-		<li>{{answer.vote}} --- {{ answer.content | truncate(500) }} --- {{answer.dateModified}}</li>
+		<li> {{ answer.content | truncate(500) }} <span class='vote_count'>{{answer.vote}}</span> 
+
 		{% if answer.ukey %}
-			<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
-			<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+			<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> &#9650;</a>
+			<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> &#9660;</a>
 
 			{% if answer.user == user %}
-				<a class='editanswer' href='/editanswer?answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Edit </a>
+				<a class='edit' href='/editanswer?answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Edit </a>
 			{% endif %}
 
 		{% endif %}
+
+		<p class='date_mod'>Date Modified: {{answer.dateModified}}</p></li>
 
 
 	{% endfor %}
 	</ul>
 
 		{% if user %}
-		<a href='/addanswer?questionid={{question.key.urlsafe()}}'> Add answer </a><br />
+		<a class='addanswer' href='/addanswer?questionid={{question.key.urlsafe()}}'> Add answer </a><br />
 		{% endif %}
 	{% endfor %}
 
@@ -71,9 +87,10 @@ Current Questions:
 {% if page|int > 0 %}
 <form method='GET' action=''>
 	<input type='hidden' name='page_num' value='{{((page|int)+1)|string}}' />
-	<input type='submit' value='Next Page'>
+	<input type='submit' value='Next Page' class='nextpage'>
 </form>
 {% endif %}
+</div>
 </div>
 </body>
 

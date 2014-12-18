@@ -2,13 +2,28 @@
 <html>
 <head>
 <link rel='stylesheet' href='/css/main.css' type='text/css' />
-<link rel='stylesheet' href='/css/editquestion.css' type='text/css' />
+<link rel='stylesheet' href='/css/addquestion.css' type='text/css' />
 
+<title> Qudo'hra - Edit Question</title>
+
+<style>
+body{
+	background: url('/img/editq_background.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+    background-position: 0px -300px;
+    color: #FFF;
+}
+
+</style>
 </head>
 
 <body>
 	<form action='' method='POST'>	
-	<label> Your question? <textarea name='content' rows='15' cols='60'> {{question.content}}</textarea> </label>
+	<label> Your question? <textarea name='content' rows='15' cols='60' required> {{question.content}}</textarea> </label>
 	<label> Which tags do you want to add to this question? <input type='text' name='tags' value='{{tags}}'/> </label>
 
 	<input type='submit' value='Edit Question' />

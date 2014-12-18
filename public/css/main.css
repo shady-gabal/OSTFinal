@@ -43,3 +43,7 @@ body{
 height: auto;
 min-height: 100vh !important;
 }
+
+a{
+	text-decoration: none;
+}

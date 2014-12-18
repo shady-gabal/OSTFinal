@@ -2,14 +2,31 @@
 <html>
 <head>
 <link rel='stylesheet' href='/css/main.css' type='text/css' />
-<link rel='stylesheet' href='/css/editquestion.css' type='text/css' />
+<link rel='stylesheet' href='/css/addquestion.css' type='text/css' />
+
+<title> Qudo'hra - Edit answer </title>
+
+
+<style>
+body{
+	background: url('/img/edit_answer.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+    background-position: 0px -300px;
+    color: #FFF;
+}
+
+</style>
 
 </head>
 
 <body>
 	<form action='' method='POST'>	
 	<p> Question: {{question.content}} </p>
-	<label> Your answer <textarea name='content' rows='15' cols='60'> {{answer.content}}</textarea> </label>
+	<label> Your answer <textarea name='content' rows='15' cols='60' required> {{answer.content}}</textarea> </label>
 	<input type='submit' value='Edit Answer' />
 	</form>
 

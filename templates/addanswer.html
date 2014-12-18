@@ -2,7 +2,23 @@
 <html>
 <head>
 <link rel='stylesheet' type='text/css' href='/css/main.css' />
-<link rel='stylesheet' type='text/css' href='/css/addanswer.css' />
+<link rel='stylesheet' type='text/css' href='/css/addquestion.css' />
+
+<title> Qudo'hra - Add Answer </title>
+
+<style>
+body{
+	background: url('/img/answer_background.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+ 	-moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+    background-position: 500px;
+    background-color: #7950ca;
+}
+</style>
+
 </head>
 
 <body>
@@ -10,7 +26,7 @@
 	{% if question %}
 	<p> Question: {{question.content}} </p>	
 	{% endif %}
-	<label> What is your answer <textarea name='content' rows='15' cols='60' required></textarea> </label>
+	<label> Answer: <textarea name='content' rows='15' cols='60' required></textarea required> </label>
 
 	<input type='submit' value='Add Answer' />
 	</form>

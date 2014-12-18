@@ -1,0 +1,68 @@
+Qudo'hra
+by Shady Gabal
+
+Inspired by Homer Simpson and Quora
+
+Technical details:
+Written in Python, using Google App Engine and Jinja2 for templating.
+
+Notes:
+1)Vote using the arrows next to each question.
+2)Can only vote up and down once per question or answer per user. The arrows will still appear but the vote will not work if tried.
+3)RSS is not spaced (assignment did not mention this as a requirement)
+4)Link and image conversion is done in templates, using custom helper methods.
+5)This is styled pretty nicely for a project assignment, which I know was not a requirement but I coded this as if it was a real website (missing a couple of features that a complete site would have but I didn't have enough time to implement all of them).
+
+Code Explanation:
+
+Models:
+	Created custom UserModel to store votes.
+	Created Answer model to store answer information.
+	Created Question model to store question information. Question has a repeated Answer property, to allow storage of answers directly within each question. Stored all questions under one common ancestor (QuestionList) to allow for faster retrieval and storage (without this, question is not updated quickly enough to show after redirecting to index page)
+
+Global methods:
+	renderIfLoggedIn - renders a template only if the user is logged in.
+	quicksort - used to sort answers by absolute value of vote count after every vote
+	replaceWithImages - uses regex to find all image links in content, replaces them with <img> tags. Used in template as a helper
+	replaceWithLinks- uses regex to find all non-image links in content, replaces them with <a> tags. Used in template as a helper
+
+
+Landing page ('/' : home.html)
+	coded using javascript/css, nice little animation, free of charge, hoped you enjoyed that.
+
+Index ('/index' : index.html)
+	Grabs all questions, sends them to template
+
+AddQuestion ('/addquestion' : addquestion.html)
+	Adds a new question (escapes content before adding to database)
+
+AddAnswer('/addanswer' : addanswer.html)
+	Adds a new answer (escapes content before adding to database). Takes a question key as a GET parameter
+
+ShowQuestion('/showquestion' : showquestion.html)
+	Displays detailed question info. Takes a question key as a GET parameter
+
+EditQuestion('/editquestion' : editquestion.html)
+	Edits a question. Default values in boxes are current question info. Takes a question key as a GET parameter
+
+EditAnswer('/editanswer' : editanswer.html)
+	Edits an answer. Default values in boxes are current answer info. Takes a question key and an answer key as a GET parameter
+
+VoteQuestion('/votequestion')
+	When this page is requested via GET it votes up/down a question. Takes a question key and a direction as a GET parameter.
+
+VoteAnswer('/voteanswer')
+	When this page is requested via GET it votes up/down a question. Takes a question key, a direction, and an answer key as a GET parameter.
+
+AddImage ('/addimage' + '/upload', addimage.html)
+	Presents a form to upload an image.
+
+UploadHandler ('/upload')
+	When the AddImage form is submitted it posts to an /upload url. The image is uploaded and the url you are taken to is a permanent URL for this image.
+
+ServeHandler('/serve')
+	Used to serve image requests.
+
+RSSPage ('/rss')
+	Grabs all questions and their answers, parses them into an RSS document, sets Content-Type to text/rss, displays document.
+

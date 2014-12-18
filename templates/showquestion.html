@@ -3,27 +3,35 @@
 <head>
 <link rel='stylesheet' type='text/css' href='/css/main.css' />
 <link rel='stylesheet' type='text/css' href='/css/showquestion.css' />
+
+<title> Qudo'hra - Show Question</title>
+
 </head>
 
 <body>
 
-{{question.content}}
-by {{question.user}}
-date created {{question.dateCreated}}
-date modified {{question.dateModified}}
-vote {{question.vote}}
-tags 
+<p id='question'>{{question.content}}</p>
+<p id='question_author'>by {{question.user}}</p>
+<p id='date_created'>Date Created: {{question.dateCreated}}</p>
+<p id='date_modified'>Date Modified: {{question.dateModified}}</p>
+<p id='vote'>Vote Count: {{question.vote}}</p>
+
+<p id='tags'>tags:
 {% for tag in question.tags %}
 	{{tag}}
 {% endfor %}
+</p>
 
-<ul>
+<p>Answers:</p>
+<ul id='answers'>
 	{% for answer in question.answers %}
 
-		<li>{{answer.vote}} --- {{ answer.content }} --- {{answer.dateModified}}</li>
+		<li>{{ answer.content }} <span>{{answer.vote}} </span> 
 		{% if answer.ukey %}
-		<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote up</a>
-		<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> Vote down</a>
+		<a class='vote' href='/voteanswer?direction=up&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> &#9650;</a>
+		<a class='vote' href='/voteanswer?direction=down&answerid={{answer.ukey.urlsafe()}}&questionid={{question.key.urlsafe()}}'> &#9660;</a>
 		{% endif %}
+		<p class='a_date'>date modified: {{answer.dateModified}}</p></li>
+		
 	{% endfor %}
 </ul>

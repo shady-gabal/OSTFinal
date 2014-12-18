@@ -38,9 +38,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 JINJA_ENVIRONMENT.globals['replaceWithImages'] = replaceWithImages 
 JINJA_ENVIRONMENT.globals['replaceWithLinks'] = replaceWithLinks 
 
-
-# 8)Images can be uploaded.  These will be available via a permalink after uploaded, and can be referenced using links in the posts.
-# 11)Each question will have an RSS link, that dumps all questions and answers in XML format (see wiki page for example).
 #### MODELS ####
 
 class UserModel(ndb.Model):
@@ -49,14 +46,6 @@ class UserModel(ndb.Model):
 	qvotesdown = ndb.StringProperty(repeated=True)
 	avotesup = ndb.StringProperty(repeated=True)
 	avotesdown = ndb.StringProperty(repeated=True)
-
-class VoteHolder(ndb.Model):
-	date = ndb.DateTimeProperty(auto_now=True)
-	questionid = ndb.StringProperty(indexed=True)
-	answerid = ndb.StringProperty(indexed=True)
-	votedup = ndb.StringProperty(repeated=True)
-	voteddown = ndb.StringProperty(repeated=True)
-
 
 class Answer(ndb.Model):
 
@@ -297,6 +286,25 @@ class EditAnswerPage(webapp2.RequestHandler):
 
 		return
 
+	def post(self):
+		user = users.get_current_user()
+		if user:
+			aid = self.request.get('answerid')
+			qid = self.request.get('questionid')
+			qKey = ndb.Key(urlsafe=qid)
+			question = qKey.get()
+
+			i = 0
+			for ans in question.answers:
+				if ans.ukey and ans.ukey.urlsafe() == aid:
+					answer = ans
+			answer.content = cgi.escape(self.request.get('content'));
+			answer.put()
+			question.put()
+			self.redirect('/index')
+			return
+
+
 class VoteQuestionPage(webapp2.RequestHandler):
 
 	def get(self):
@@ -372,7 +380,7 @@ class VoteAnswerPage(webapp2.RequestHandler):
 					question.put()
 					usermodel.avotesdown.append(aid)
 					usermodel.put()
-					self.redirect('/index')
+					self.redirect(last_page)
 				else:
 					self.redirect('/index')
 
@@ -405,6 +413,19 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		self.send_blob(blob_info)
 
 
+class RSSPage(webapp2.RequestHandler):
+	def get(self):
+		questionQuery = Question.query(ancestor=questionListKey()).order(-Question.dateModified)
+		questionsList = questionQuery.fetch()
+		self.response.headers['Content-Type'] = 'text/rss+xml'
+		self.response.write("""<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>Qudo'hra</title><link>qudohra.appspot.com/index</link><description>Homer Simpson's Quora</description>""")
+		for question in questionsList:
+			anscontent = ""
+			for ans in question.answers:
+ 				anscontent += str(ans.user) + " answered: " + ans.content + ".  "
+			self.response.write("""<item><title>{0}</title><link>{1}</link><description>{2}</description></item>""".format(question.content,("qudohra.appspot.com/showquestion/" + question.key.urlsafe()),anscontent))
+	 	self.response.write('</channel></rss>')
+	 	return
 
 application = webapp2.WSGIApplication([
 	('/', HomePage),
@@ -418,7 +439,7 @@ application = webapp2.WSGIApplication([
 	('/showquestion', ShowQuestionPage),
 	('/addimage', AddImagePage),
 	('/upload', UploadHandler),
-	('/serve/([^/]+)?', ServeHandler)
-
+	('/serve/([^/]+)?', ServeHandler),
+	('/rss', RSSPage)
 
 ], debug=True)
