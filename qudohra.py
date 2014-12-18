@@ -413,19 +413,19 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		self.send_blob(blob_info)
 
 
-class RSSPage(webapp2.RequestHandler):
-	def get(self):
-		questionQuery = Question.query(ancestor=questionListKey()).order(-Question.dateModified)
-		questionsList = questionQuery.fetch()
-		self.response.headers['Content-Type'] = 'text/rss+xml'
-		self.response.write("""<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>Qudo'hra</title><link>qudohra.appspot.com/index</link><description>Homer Simpson's Quora</description>""")
-		for question in questionsList:
-			anscontent = ""
-			for ans in question.answers:
- 				anscontent += str(ans.user) + " answered: " + ans.content + ".  "
-			self.response.write("""<item><title>{0}</title><link>{1}</link><description>{2}</description></item>""".format(question.content,("qudohra.appspot.com/showquestion/" + question.key.urlsafe()),anscontent))
-	 	self.response.write('</channel></rss>')
-	 	return
+# class RSSPage(webapp2.RequestHandler):
+# 	def get(self):
+# 		questionQuery = Question.query(ancestor=questionListKey()).order(-Question.dateModified)
+# 		questionsList = questionQuery.fetch()
+# 		self.response.headers['Content-Type'] = 'text/rss+xml'
+# 		self.response.write("""<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>Qudo'hra</title><link>qudohra.appspot.com/index</link><description>Homer Simpson's Quora</description>""")
+# 		for question in questionsList:
+# 			anscontent = ""
+# 			for ans in question.answers:
+#  				anscontent += str(ans.user) + " answered: " + ans.content + ".  "
+# 			self.response.write("""<item><title>{0}</title><link>{1}</link><description>{2}</description></item>""".format(question.content,("qudohra.appspot.com/showquestion/" + question.key.urlsafe()),anscontent))
+# 	 	self.response.write('</channel></rss>')
+# 	 	return
 
 application = webapp2.WSGIApplication([
 	('/', HomePage),
@@ -440,6 +440,6 @@ application = webapp2.WSGIApplication([
 	('/addimage', AddImagePage),
 	('/upload', UploadHandler),
 	('/serve/([^/]+)?', ServeHandler),
-	('/rss', RSSPage)
+	# ('/rss', RSSPage)
 
 ], debug=True)
